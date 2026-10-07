@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>College Assistant Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #14213d;
+      --navy-soft: #3b4a6b;
+      --bg: #f2f5f9;
+      --surface: #ffffff;
+      --line: #dbe2ee;
+      --accent: #f2b134;
+      --focus: #2b59c3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+    header { background: var(--navy); color: #fff; }
+    header .wrap { display: flex; align-items: center; gap: 12px; padding-top: 18px; padding-bottom: 18px; }
+    .logo { width: 12px; height: 28px; background: var(--accent); border-radius: 3px; }
+    header h1 { margin: 0; font: 700 1.25rem "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: .01em; }
+
+    .hero { padding: 48px 0 28px; text-align: left; }
+    .hero h2 { margin: 0 0 12px; font: 700 clamp(1.9rem, 5vw, 2.8rem)/1.1 "Bricolage Grotesque", system-ui, sans-serif; max-width: 16ch; }
+    .hero p { margin: 0 0 24px; max-width: 46ch; color: var(--navy-soft); font-size: 1.05rem; }
+
+    .cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+      background: var(--accent); color: var(--navy); font: 600 1rem system-ui, sans-serif;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .cta:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(20, 33, 61, .18); }
+
+    .topics-title { margin: 36px 0 12px; font-size: 1rem; font-weight: 600; color: var(--navy-soft); }
+    .topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding: 0; margin: 0 0 48px; list-style: none; }
+    .topic {
+      width: 100%; text-align: left; padding: 16px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+      color: var(--navy); font: inherit;
+      transition: border-color .15s ease, transform .15s ease;
+    }
+    .topic:hover { border-color: var(--navy); transform: translateY(-2px); }
+    .topic strong { display: block; font-size: 1.02rem; }
+    .topic span { display: block; margin-top: 2px; font-size: .88rem; color: var(--navy-soft); }
+
+    .cta:focus-visible, .topic:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    footer { padding: 24px 0 96px; font-size: .9rem; color: var(--navy-soft); border-top: 1px solid var(--line); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cta, .topic { transition: none; }
+      .cta:hover, .topic:hover { transform: none; }
+    }
+
+    /* Chat widget theme */
+    df-messenger {
+      --df-messenger-font-color: #14213d;
+      --df-messenger-chat-background: #f2f5f9;
+      --df-messenger-bot-message: #ffffff;
+      --df-messenger-user-message: #14213d;
+      --df-messenger-button-titlebar-color: #14213d;
+      --df-messenger-button-titlebar-font-color: #ffffff;
+      --df-messenger-send-icon: #14213d;
+      --df-messenger-minimized-chat-close-icon-color: #ffffff;
+      --df-messenger-chip-border-color: #14213d;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="logo" aria-hidden="true"></div>
+      <h1>College Assistant</h1>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h2>Get answers about campus life</h2>
+      <p>Pick a topic below, or open the chat and type your own question.</p>
+      <button class="cta" id="open-chat" type="button">Open chat</button>
+    </section>
+
+    <h3 class="topics-title">Popular topics</h3>
+    <ul class="topics">
+      <li><button class="topic" type="button" data-q="Tell me about admissions"><strong>Admissions</strong><span>Eligibility and process</span></button></li>
+      <li><button class="topic" type="button" data-q="What are the fees?"><strong>Fees</strong><span>Tuition and payment</span></button></li>
+      <li><button class="topic" type="button" data-q="When are the exams?"><strong>Exams</strong><span>Dates and rules</span></button></li>
+      <li><button class="topic" type="button" data-q="Show me the timetable"><strong>Timetable</strong><span>Classes and schedule</span></button></li>
+      <li><button class="topic" type="button" data-q="Tell me about the hostel"><strong>Hostel</strong><span>Rooms and facilities</span></button></li>
+    </ul>
+  </main>
+
+  <footer>
+    <div class="wrap">Your College Name</div>
+  </footer>
+
+  <!-- Dialogflow chatbot: keep this inside <body>, at the end -->
+  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+  <df-messenger
+    intent="WELCOME"
+    chat-title="College_Assistance_Chatbot"
+    agent-id="9b0f0fd0-786c-4b0b-a7c0-47b2353c8ced"
+    language-code="en"
+  ></df-messenger>
+
+  <script>
+    (function () {
+      var bot = document.querySelector('df-messenger');
+      function openChat() {
+        try { if (bot.showMinChat) bot.showMinChat(); } catch (e) {}
+      }
+      document.getElementById('open-chat').addEventListener('click', openChat);
+      document.querySelectorAll('.topic').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openChat();
+          try { if (bot.sendQuery) bot.sendQuery(btn.dataset.q); } catch (e) {}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
